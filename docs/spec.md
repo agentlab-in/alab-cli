@@ -7,7 +7,7 @@ Distribute one `alab` executable per supported operating system and CPU. The exe
 ## Decisions
 
 - Bun compile produces native executables and is used only in development and CI.
-- Pages v2.0.0 plus its side-effect-free integration entry point is pinned as a Git submodule at commit `15355cdde65a8f536c48264b3239a097ecec8492`.
+- Pages v2.0.0 plus its side-effect-free integration entry point is pinned as a Git submodule at commit `33c4c004ec9e854f3521750ab6e26ad935758c1b`.
 - Runtime dependencies are exact versions in `package.json` and `bun.lock`.
 - Pages executes in-process. Arguments and process streams remain unchanged. Its rejection reaches one top-level error handler and sets exit code 1.
 - `alab --version` reports the router version and every integrated tool version and SHA.

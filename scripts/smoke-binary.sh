@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
+trap 'echo "smoke assertion failed at line $LINENO: status=$status stdout=$stdout stderr=$stderr" >&2' ERR
 
 binary="$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
+status=0
+stdout=""
+stderr=""
 scratch="$(mktemp -d)"
 trap 'rm -rf "$scratch"' EXIT
 
@@ -12,29 +16,73 @@ run_clean() {
   env -i PATH="$scratch/empty-path" ALAB_HOME="$scratch/home" ALAB_PAGES_CONTENT="$scratch/content" "$binary" "$@"
 }
 
-version="$(run_clean --version)"
-[[ "$version" == *'pages 2.0.0 (15355cdde65a8f536c48264b3239a097ecec8492)'* ]]
-run_clean pages --help >/dev/null
-run_clean pages info >/dev/null
+capture() {
+  set +e
+  run_clean "$@" >"$scratch/stdout" 2>"$scratch/stderr"
+  status=$?
+  set -e
+  stdout="$(<"$scratch/stdout")"
+  stderr="$(<"$scratch/stderr")"
+}
 
-first="$(run_clean pages put "$scratch/site" --skip-deploy --json)"
-[[ "$first" =~ \"id\"[[:space:]]*:[[:space:]]*\"([a-z0-9]+)\" ]]
-id="${BASH_REMATCH[1]}"
-test -n "$id"
-read_result="$(run_clean pages read --dir "$scratch/site" --json)"
-[[ "$read_result" =~ \"id\"[[:space:]]*:[[:space:]]*\"$id\" ]]
-list_result="$(run_clean pages list --json)"
-[[ "$list_result" =~ \"id\"[[:space:]]*:[[:space:]]*\"$id\" ]]
+assert_success() {
+  [[ "$status" -eq 0 ]]
+  [[ -z "$stderr" ]]
+}
+
+assert_json() {
+  [[ "$stdout" == \{*\} || "$stdout" == \[*\] ]]
+}
+
+capture --version
+assert_success
+[[ "$stdout" == $'alab 0.1.0\npages 2.0.0 (33c4c004ec9e854f3521750ab6e26ad935758c1b)' ]]
+
+capture pages --help
+assert_success
+[[ "$stdout" == *'Usage: alab pages [options] [command]'* ]]
+[[ "$stdout" == *'setup [options]'* ]]
+[[ "$stdout" == *'put [options] [dir]'* ]]
+
+capture pages info
+assert_success
+[[ "$stdout" == *'CF token      missing'* ]]
+
+capture pages put "$scratch/site" --id Alpha9 --skip-deploy --json
+assert_success
+assert_json
+[[ "$stdout" =~ \"id\"[[:space:]]*:[[:space:]]*\"alpha9\" ]]
+[[ "${stdout#*\"id\"}" != *'"id"'* ]]
+
+capture pages read --dir "$scratch/site" --json
+assert_success
+assert_json
+[[ "$stdout" =~ \"id\"[[:space:]]*:[[:space:]]*\"alpha9\" ]]
+
+capture pages list --json
+assert_success
+assert_json
+[[ "$stdout" =~ \"id\"[[:space:]]*:[[:space:]]*\"alpha9\" ]]
 
 printf '<h1>updated</h1>\n' > "$scratch/site/index.html"
-second="$(run_clean pages put "$scratch/site" --skip-deploy --json)"
-[[ "$second" =~ \"id\"[[:space:]]*:[[:space:]]*\"$id\" ]]
-removed="$(run_clean pages remove "$id" --skip-deploy --json)"
-[[ "$removed" =~ \"id\"[[:space:]]*:[[:space:]]*\"$id\" ]]
+capture pages put "$scratch/site" --skip-deploy --json
+assert_success
+assert_json
+[[ "$stdout" =~ \"id\"[[:space:]]*:[[:space:]]*\"alpha9\" ]]
 
-if run_clean unknown >/dev/null 2>&1; then
-  echo "unknown tool unexpectedly succeeded" >&2
-  exit 1
-fi
+capture pages remove alpha9 --skip-deploy --json
+assert_success
+assert_json
+[[ "$stdout" =~ \"id\"[[:space:]]*:[[:space:]]*\"alpha9\" ]]
+
+capture pages read missing --json
+[[ "$status" -eq 1 ]]
+[[ -z "$stdout" ]]
+[[ "$stderr" == 'Error: Page missing is not in the local store' ]]
+
+capture unknown
+[[ "$status" -eq 1 ]]
+[[ -z "$stdout" ]]
+[[ "$stderr" == "Error: unknown tool 'unknown'. Run 'alab --help'." ]]
 
 echo "compiled binary smoke test passed"

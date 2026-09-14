@@ -6,7 +6,7 @@
   "scripts": {
     "build": "bun build --compile --minify --outfile dist/alab src/cli.ts",
     "build:all": "bun scripts/build-all.ts",
-    "test": "bun test tests/cli.test.ts",
+    "test": "bun test tests/router.test.ts",
     "test:binary": "bash scripts/smoke-binary.sh dist/alab",
     "verify:pins": "bun scripts/verify-pins.ts"
   },
