@@ -34,3 +34,8 @@ jobs:
       - run: bun run test
       - run: bun build --compile --minify --target=${{ matrix.target }} --outfile=dist/alab src/cli.ts
       - run: bun run test:binary
+      - uses: actions/upload-artifact@v4
+        with:
+          name: alab-${{ matrix.target }}
+          path: dist/alab
+          if-no-files-found: error

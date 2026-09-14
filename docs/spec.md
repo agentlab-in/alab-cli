@@ -25,3 +25,4 @@ Review integration, a plugin system, Pages recovery or pull behavior, framework 
 3. Compile the host executable.
 4. Run Pages help, info, put, read, list, update, and remove against isolated temporary state with development tools absent from `PATH`.
 5. Build all release targets and produce deterministic artifact names and checksums.
+6. Retain each natively tested binary as a downloadable CI artifact.

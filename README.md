@@ -42,6 +42,8 @@ bun run test:binary
 
 `bun run build:all` cross-compiles the four declared release targets into `dist/`.
 
+Every CI run retains its four verified platform binaries as downloadable workflow artifacts. Tagged releases package the same target set into archives with a `SHA256SUMS` manifest.
+
 ## Security
 
 Every published page is public. The optional Pages root password only obscures the root listing and does not protect direct page URLs. Never publish credentials or private content.
