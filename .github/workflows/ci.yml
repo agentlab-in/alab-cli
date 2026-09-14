@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: bun-linux-x64
+          - os: ubuntu-24.04-arm
+            target: bun-linux-arm64
+          - os: macos-14
+            target: bun-darwin-arm64
+          - os: macos-15-intel
+            target: bun-darwin-x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.10
+      - run: bun install --frozen-lockfile
+      - run: bun run verify:pins
+      - run: bun test
+      - run: bun build --compile --minify --target=${{ matrix.target }} --outfile=dist/alab src/cli.ts
+      - run: bun run test:binary

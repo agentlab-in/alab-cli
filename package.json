@@ -1,0 +1,23 @@
+{
+  "name": "@agentlab/alab-cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "bun build --compile --minify --outfile dist/alab src/cli.ts",
+    "build:all": "bun scripts/build-all.ts",
+    "test": "bun test tests/cli.test.ts",
+    "test:binary": "bash scripts/smoke-binary.sh dist/alab",
+    "verify:pins": "bun scripts/verify-pins.ts"
+  },
+  "dependencies": {
+    "@noble/hashes": "2.4.0",
+    "commander": "13.1.0"
+  },
+  "devDependencies": {
+    "@types/bun": "1.3.10"
+  },
+  "engines": {
+    "bun": "1.3.10"
+  }
+}
