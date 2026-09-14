@@ -78,7 +78,7 @@ assert_json
 capture pages read missing --json
 [[ "$status" -eq 1 ]]
 [[ -z "$stdout" ]]
-[[ "$stderr" == 'Error: Page missing is not in the local store' ]]
+[[ "$stderr" == 'Error: Unknown page id "missing". Run agentlab-pages list.' ]]
 
 capture unknown
 [[ "$status" -eq 1 ]]
