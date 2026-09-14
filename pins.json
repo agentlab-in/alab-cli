@@ -2,7 +2,7 @@
   "pages": {
     "version": "2.0.0",
     "repository": "https://github.com/agentlab-in/pages.git",
-    "commit": "33c4c004ec9e854f3521750ab6e26ad935758c1b",
+    "commit": "c6a71e826bfecb9f7c65c88c1f1d28ba23f72bd8",
     "packageSha256": "33359d14b47a323d4447890b4e5edf8700b25956e1a46f3843c6d0ab52287125"
   }
 }

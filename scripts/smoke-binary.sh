@@ -36,7 +36,7 @@ assert_json() {
 
 capture --version
 assert_success
-[[ "$stdout" == $'alab 0.1.0\npages 2.0.0 (33c4c004ec9e854f3521750ab6e26ad935758c1b)' ]]
+[[ "$stdout" == $'alab 0.1.0\npages 2.0.0 (c6a71e826bfecb9f7c65c88c1f1d28ba23f72bd8)' ]]
 
 capture pages --help
 assert_success
