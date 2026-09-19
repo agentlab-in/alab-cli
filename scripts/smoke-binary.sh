@@ -36,7 +36,7 @@ assert_json() {
 
 capture --version
 assert_success
-[[ "$stdout" == $'alab 0.1.0\npages 2.0.0 (c6a71e826bfecb9f7c65c88c1f1d28ba23f72bd8)' ]]
+[[ "$stdout" == $'alab 0.1.0\npages 3.0.0 (887e73f189c192423fd9f897730b06417fa82362)' ]]
 
 capture pages --help
 assert_success
@@ -78,11 +78,16 @@ assert_json
 capture pages read missing --json
 [[ "$status" -eq 1 ]]
 [[ -z "$stdout" ]]
-[[ "$stderr" == 'Error: Unknown page id "missing". Run agentlab-pages list.' ]]
+[[ "$stderr" == 'Error: Unknown page id "missing". Run alab pages list.' ]]
 
 capture unknown
 [[ "$status" -eq 1 ]]
 [[ -z "$stdout" ]]
 [[ "$stderr" == "Error: unknown tool 'unknown'. Run 'alab --help'." ]]
+
+capture put
+[[ "$status" -eq 1 ]]
+[[ -z "$stdout" ]]
+[[ "$stderr" == "Error: unknown tool 'put'. Run 'alab --help'." ]]
 
 echo "compiled binary smoke test passed"

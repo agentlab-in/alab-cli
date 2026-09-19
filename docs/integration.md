@@ -2,11 +2,11 @@
 
 ## Current interface
 
-The router imports `runCli(argv)` from the exact Pages `src/program.ts` revision and calls it in the same process when the first argument is `pages`. Pages receives the original `process.argv` array.
+The router mounts `createPagesCommand()` from the exact Pages `src/program.ts` revision with `addCommand` and parses the original `process.argv` array in the same process when the first argument is `pages`.
 
 This preserves every remaining argument and option, standard input for hidden interactive prompts, standard output including JSON, standard error and subprocess progress, the working directory and environment, and success or failure through the process exit status.
 
-No extraction is used. Bun embeds the router, Pages source, and JavaScript dependencies in the executable. Pages v2.0.0 deploys through the Cloudflare HTTP API and does not invoke Wrangler.
+No extraction is used. Bun embeds the router, Pages source, and JavaScript dependencies in the executable. Pages v3.0.0 deploys through the Cloudflare HTTP API and does not invoke Wrangler. Pages publishes no bins; the `pages` command surface exists only inside this binary.
 
 ## Pin and integrity policy
 
