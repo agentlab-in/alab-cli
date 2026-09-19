@@ -1,8 +1,9 @@
 #!/usr/bin/env bun
+import { Command } from "commander";
 import alabPackage from "../package.json";
 import pins from "../pins.json";
 import pagesPackage from "../vendor/pages/package.json";
-import { runCli as runPagesCli } from "../vendor/pages/src/program.ts";
+import { createPagesCommand } from "../vendor/pages/src/program.ts";
 
 const HELP = `Alab ${alabPackage.version}
 
@@ -21,6 +22,14 @@ export function versionText(): string {
   return `alab ${alabPackage.version}\npages ${pagesPackage.version} (${pins.pages.commit})`;
 }
 
+export function createAlabProgram(): Command {
+  const program = new Command();
+  program.exitOverride();
+  program.name("alab").description("AgentLab tools").version(versionText());
+  program.addCommand(createPagesCommand());
+  return program;
+}
+
 export async function main(argv = process.argv): Promise<number> {
   const args = argv.slice(2);
   if (args.length === 0 || args[0] === "help" || args[0] === "--help" || args[0] === "-h") {
@@ -36,7 +45,14 @@ export async function main(argv = process.argv): Promise<number> {
     return 1;
   }
 
-  await runPagesCli(argv);
+  try {
+    await createAlabProgram().parseAsync(argv);
+  } catch (error: unknown) {
+    const e = error as { code?: string };
+    if (e?.code === "commander.helpDisplayed" || e?.code === "commander.version") return process.exitCode ?? 0;
+    console.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+    return 1;
+  }
   return process.exitCode ?? 0;
 }
 

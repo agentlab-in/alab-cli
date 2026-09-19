@@ -13,7 +13,7 @@ function run(args: string[]) {
 
 describe("Alab router", () => {
   test("reports combined and pinned Pages versions", () => {
-    expect(versionText()).toBe(`alab 0.1.0\npages 2.0.0 (${pins.pages.commit})`);
+    expect(versionText()).toBe(`alab 0.1.0\npages 3.0.0 (${pins.pages.commit})`);
   });
 
   test("routes Pages help with exact successful streams", () => {
@@ -33,5 +33,13 @@ describe("Alab router", () => {
     expect(result.exitCode).toBe(1);
     expect(result.stdout.toString()).toBe("");
     expect(result.stderr.toString()).toBe("Error: unknown tool 'unknown'. Run 'alab --help'.\n");
+  });
+
+  test("rejects top-level Pages commands outside the pages tool", () => {
+    const result = run(["put"]);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout.toString()).toBe("");
+    expect(result.stderr.toString()).toBe("Error: unknown tool 'put'. Run 'alab --help'.\n");
   });
 });
