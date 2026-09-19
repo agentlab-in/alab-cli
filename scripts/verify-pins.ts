@@ -4,16 +4,25 @@ import { resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import pins from "../pins.json";
 import pagesPackage from "../vendor/pages/package.json";
+import reviewPackage from "../vendor/review/package.json";
 
 const root = resolve(import.meta.dir, "..");
-const packagePath = resolve(root, "vendor/pages/package.json");
-const revision = spawnSync("git", ["-C", resolve(root, "vendor/pages"), "rev-parse", "HEAD"], { encoding: "utf8" });
 
-if (revision.status !== 0) throw new Error(revision.stderr.trim() || "Could not read Pages revision");
-if (revision.stdout.trim() !== pins.pages.commit) throw new Error(`Pages revision mismatch: ${revision.stdout.trim()}`);
-if (pagesPackage.version !== pins.pages.version) throw new Error(`Pages version mismatch: ${pagesPackage.version}`);
+const tools = [
+  { name: "pages", pin: pins.pages, version: pagesPackage.version },
+  { name: "review", pin: pins.review, version: reviewPackage.version },
+] as const;
 
-const packageHash = createHash("sha256").update(readFileSync(packagePath)).digest("hex");
-if (packageHash !== pins.pages.packageSha256) throw new Error(`Pages package hash mismatch: ${packageHash}`);
+for (const tool of tools) {
+  const packagePath = resolve(root, `vendor/${tool.name}/package.json`);
+  const revision = spawnSync("git", ["-C", resolve(root, `vendor/${tool.name}`), "rev-parse", "HEAD"], { encoding: "utf8" });
 
-console.log(`pages ${pins.pages.version} ${pins.pages.commit} sha256:${packageHash}`);
+  if (revision.status !== 0) throw new Error(revision.stderr.trim() || `Could not read ${tool.name} revision`);
+  if (revision.stdout.trim() !== tool.pin.commit) throw new Error(`${tool.name} revision mismatch: ${revision.stdout.trim()}`);
+  if (tool.version !== tool.pin.version) throw new Error(`${tool.name} version mismatch: ${tool.version}`);
+
+  const packageHash = createHash("sha256").update(readFileSync(packagePath)).digest("hex");
+  if (packageHash !== tool.pin.packageSha256) throw new Error(`${tool.name} package hash mismatch: ${packageHash}`);
+
+  console.log(`${tool.name} ${tool.pin.version} ${tool.pin.commit} sha256:${packageHash}`);
+}

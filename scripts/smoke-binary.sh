@@ -36,13 +36,24 @@ assert_json() {
 
 capture --version
 assert_success
-[[ "$stdout" == $'alab 0.1.0\npages 3.0.0 (887e73f189c192423fd9f897730b06417fa82362)' ]]
+[[ "$stdout" == $'alab 0.1.0\npages 3.0.0 (887e73f189c192423fd9f897730b06417fa82362)\nreview 0.1.0 (94650db26a44d21f5b3d9cbf1714a11607c21405)' ]]
 
 capture pages --help
 assert_success
 [[ "$stdout" == *'Usage: alab pages [options] [command]'* ]]
 [[ "$stdout" == *'setup [options]'* ]]
 [[ "$stdout" == *'put [options] [dir]'* ]]
+
+capture review --help
+assert_success
+[[ "$stdout" == *'Usage: alab review [options] [command]'* ]]
+[[ "$stdout" == *'start [options] [dir]'* ]]
+[[ "$stdout" == *'list [options]'* ]]
+
+capture review list --dir "$scratch/site"
+[[ "$status" -eq 1 ]]
+[[ -z "$stdout" ]]
+[[ "$stderr" == "Error: No review project in $scratch/site. Run review start on that folder first." ]]
 
 capture pages info
 assert_success
@@ -89,5 +100,10 @@ capture put
 [[ "$status" -eq 1 ]]
 [[ -z "$stdout" ]]
 [[ "$stderr" == "Error: unknown tool 'put'. Run 'alab --help'." ]]
+
+capture start
+[[ "$status" -eq 1 ]]
+[[ -z "$stdout" ]]
+[[ "$stderr" == "Error: unknown tool 'start'. Run 'alab --help'." ]]
 
 echo "compiled binary smoke test passed"

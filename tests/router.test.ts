@@ -12,8 +12,8 @@ function run(args: string[]) {
 }
 
 describe("Alab router", () => {
-  test("reports combined and pinned Pages versions", () => {
-    expect(versionText()).toBe(`alab 0.1.0\npages 3.0.0 (${pins.pages.commit})`);
+  test("reports combined and pinned tool versions", () => {
+    expect(versionText()).toBe(`alab 0.1.0\npages 3.0.0 (${pins.pages.commit})\nreview 0.1.0 (${pins.review.commit})`);
   });
 
   test("routes Pages help with exact successful streams", () => {
@@ -25,6 +25,17 @@ describe("Alab router", () => {
     expect(stdout.match(/^Usage:/gm)).toHaveLength(1);
     expect(stdout).toContain("Usage: alab pages [options] [command]");
     expect(stdout).toContain("put [options] [dir]");
+  });
+
+  test("routes Review help with exact successful streams", () => {
+    const result = run(["review", "--help"]);
+    const stdout = result.stdout.toString();
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stderr.toString()).toBe("");
+    expect(stdout.match(/^Usage:/gm)).toHaveLength(1);
+    expect(stdout).toContain("Usage: alab review [options] [command]");
+    expect(stdout).toContain("start [options] [dir]");
   });
 
   test("returns an exact error status without polluting stdout", () => {
@@ -41,5 +52,13 @@ describe("Alab router", () => {
     expect(result.exitCode).toBe(1);
     expect(result.stdout.toString()).toBe("");
     expect(result.stderr.toString()).toBe("Error: unknown tool 'put'. Run 'alab --help'.\n");
+  });
+
+  test("rejects top-level Review commands outside the review tool", () => {
+    const result = run(["start"]);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout.toString()).toBe("");
+    expect(result.stderr.toString()).toBe("Error: unknown tool 'start'. Run 'alab --help'.\n");
   });
 });

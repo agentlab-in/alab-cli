@@ -36,6 +36,17 @@ alab pages info
 
 `delete` aliases `remove`, and `ls` aliases `list`.
 
+### Review commands
+
+```text
+alab review start [dir] [--port <number>] [--project <id>] [--json]
+alab review list [--dir <path>] [--project <id>] [--rematch] [--json]
+alab review remove [--dir <path>] [--project <id>] --remove-comments <cN|all> [--clean] [--cleanup] [--json]
+alab review cleanup [--dir <path>] [--project <id>] [--json]
+```
+
+`review start` takes a directory only and serves it on 127.0.0.1 with the comment overlay injected in memory. Served HTML on disk is never rewritten. It prints the project id and URL and blocks until interrupted. Human comments persist to `<dir>/.alab/review.json` with sequential c1, c2 ids that are never reused; the agent reads that file and edits the HTML. `--project <id>` resumes a known folder. `--clean` clears all comments but keeps the project; `cleanup` deletes `<dir>/.alab/` entirely.
+
 `put` copies a static directory into the local full snapshot and deploys it. Repeating it for the same directory uses `.alab/pages.json` to retain the same ID and URL. `remove` deletes the locally known page and redeploys the remaining snapshot. A deployment failure does not roll back the preceding local change, so retry the same command after fixing access.
 
 `--dry-run` skips Cloudflare deployment but still changes local state. `--skip-deploy` changes only local state. Use isolated `ALAB_HOME` and `ALAB_PAGES_CONTENT` directories for experiments.
