@@ -1,3 +1,6 @@
 [submodule "vendor/pages"]
 	path = vendor/pages
 	url = https://github.com/agentlab-in/pages.git
+[submodule "vendor/review"]
+	path = vendor/review
+	url = https://github.com/agentlab-in/review.git

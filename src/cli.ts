@@ -3,7 +3,9 @@ import { Command } from "commander";
 import alabPackage from "../package.json";
 import pins from "../pins.json";
 import pagesPackage from "../vendor/pages/package.json";
+import reviewPackage from "../vendor/review/package.json";
 import { createPagesCommand } from "../vendor/pages/src/program.ts";
+import { createReviewCommand } from "../vendor/review/src/program.ts";
 
 const HELP = `Alab ${alabPackage.version}
 
@@ -11,15 +13,17 @@ Usage: alab <tool> [command] [options]
 
 Tools:
   pages     Publish static sites with AgentLab Pages
+  review    Review static HTML folders with click-to-comment
 
 Commands:
   alab pages --help     Show Pages commands and first-use guidance
+  alab review --help    Show Review commands and first-use guidance
   alab --version        Show Alab and integrated tool versions
   alab help             Show this help
 `;
 
 export function versionText(): string {
-  return `alab ${alabPackage.version}\npages ${pagesPackage.version} (${pins.pages.commit})`;
+  return `alab ${alabPackage.version}\npages ${pagesPackage.version} (${pins.pages.commit})\nreview ${reviewPackage.version} (${pins.review.commit})`;
 }
 
 export function createAlabProgram(): Command {
@@ -27,6 +31,7 @@ export function createAlabProgram(): Command {
   program.exitOverride();
   program.name("alab").description("AgentLab tools").version(versionText());
   program.addCommand(createPagesCommand());
+  program.addCommand(createReviewCommand());
   return program;
 }
 
@@ -40,7 +45,7 @@ export async function main(argv = process.argv): Promise<number> {
     console.log(versionText());
     return 0;
   }
-  if (args[0] !== "pages") {
+  if (args[0] !== "pages" && args[0] !== "review") {
     console.error(`Error: unknown tool '${args[0]}'. Run 'alab --help'.`);
     return 1;
   }
