@@ -13,7 +13,7 @@ function run(args: string[]) {
 
 describe("Alab router", () => {
   test("reports combined and pinned tool versions", () => {
-    expect(versionText()).toBe(`alab 0.1.0\npages 3.0.0 (${pins.pages.commit})\nreview 0.1.0 (${pins.review.commit})`);
+    expect(versionText()).toBe(`alab 1.0.0\npages 3.0.0 (${pins.pages.commit})\nreview 0.1.0 (${pins.review.commit})`);
   });
 
   test("routes Pages help with exact successful streams", () => {
