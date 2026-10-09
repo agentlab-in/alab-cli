@@ -24,11 +24,15 @@ alab pages setup
 alab pages put ./site
 alab review --help
 alab review start ./site
+alab upgrade --check
+alab upgrade
 ```
 
 `alab pages setup` guides Cloudflare API token validation, account selection, and project creation or reuse. Pages maintains authoritative state on one machine. A repeated `put` of the same directory retains its ID and URL. Cloudflare's default URL is used unless configuration explicitly supplies another base URL.
 
 `alab review start` serves a local folder on loopback with a click-to-comment overlay, prints the project id and URL, and blocks until interrupted. Comments persist to `<dir>/.alab/review.json` for the agent to read. Review is local only and never deploys.
+
+`alab upgrade` installs the latest stable GitHub release for the current operating system and CPU. It verifies the archive against that release's `SHA256SUMS`, checks the new executable before replacing the current one, and prints both complete version reports. Use `--version v1.0.0` to select a tag or `--check` to report the available release without changing the install. A non-native executable or unexpected Alab launcher requires `--force`.
 
 See [USAGE.md](./USAGE.md) for setup, command behavior, and limitations. See [docs/integration.md](./docs/integration.md) for the internal tool interface and update procedure.
 
