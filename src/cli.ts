@@ -6,6 +6,7 @@ import pagesPackage from "../vendor/pages/package.json";
 import reviewPackage from "../vendor/review/package.json";
 import { createPagesCommand } from "../vendor/pages/src/program.ts";
 import { createReviewCommand } from "../vendor/review/src/program.ts";
+import { upgrade } from "./upgrade.ts";
 
 const HELP = `Alab ${alabPackage.version}
 
@@ -14,10 +15,12 @@ Usage: alab <tool> [command] [options]
 Tools:
   pages     Publish static sites with AgentLab Pages
   review    Review static HTML folders with click-to-comment
+  upgrade   Upgrade Alab from GitHub Releases
 
 Commands:
   alab pages --help     Show Pages commands and first-use guidance
   alab review --help    Show Review commands and first-use guidance
+  alab upgrade --help   Show upgrade options
   alab --version        Show Alab and integrated tool versions
   alab help             Show this help
 `;
@@ -29,9 +32,17 @@ export function versionText(): string {
 export function createAlabProgram(): Command {
   const program = new Command();
   program.exitOverride();
-  program.name("alab").description("AgentLab tools").version(versionText());
+  program.name("alab").description("AgentLab tools");
   program.addCommand(createPagesCommand());
   program.addCommand(createReviewCommand());
+  program.command("upgrade")
+    .description("Upgrade Alab from GitHub Releases")
+    .option("--version <tag>", "Install a specific release")
+    .option("--check", "Report the available release without installing")
+    .option("--force", "Allow replacing a non-native executable or reinstalling the same version")
+    .action(async (options: { version?: string; check?: boolean; force?: boolean }) => {
+      await upgrade(options, { currentVersion: versionText() });
+    });
   return program;
 }
 
@@ -45,7 +56,7 @@ export async function main(argv = process.argv): Promise<number> {
     console.log(versionText());
     return 0;
   }
-  if (args[0] !== "pages" && args[0] !== "review") {
+  if (args[0] !== "pages" && args[0] !== "review" && args[0] !== "upgrade") {
     console.error(`Error: unknown tool '${args[0]}'. Run 'alab --help'.`);
     return 1;
   }

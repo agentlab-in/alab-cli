@@ -61,4 +61,12 @@ describe("Alab router", () => {
     expect(result.stdout.toString()).toBe("");
     expect(result.stderr.toString()).toBe("Error: unknown tool 'start'. Run 'alab --help'.\n");
   });
+
+  test("routes upgrade --version to the release selector", () => {
+    const result = run(["upgrade", "--version", "invalid", "--check"]);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout.toString()).toBe("");
+    expect(result.stderr.toString()).toBe("Error: Invalid release version 'invalid'. Use a version such as v1.0.0.\n");
+  });
 });
